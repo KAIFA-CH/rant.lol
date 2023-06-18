@@ -150,7 +150,7 @@ export function Feed({ data }) {
             </details>
             {post.reactions && Object.keys(post.reactions).length > 0 ? (
                 Object.keys(post.reactions).map((emoji) => (
-                    <div className="btn-octicon no-underline border color-fg-muted d-inline-flex" style={{borderRadius: "10px"}} title={post.reactions[emoji].name}>
+                    <div className="btn-octicon no-underline border color-fg-muted d-inline-flex" style={{borderRadius: "10px"}} title={post.reactions[emoji].name} key={post.reactions[emoji].name}>
                     <Emoji emojiStyle='fluentui' emojiVersion='13.0' getEmojiUrl={(uni, sty) => {return `https://cdn.jsdelivr.net/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/${uni}.png`}} unified={emoji} size={16} />
                     &nbsp;{post.reactions[emoji].inititalReactor ? 1 + post.reactions[emoji].reactors.length : 0 + post.reactions[emoji].reactors.length}
                     </div>
