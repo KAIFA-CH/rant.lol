@@ -123,7 +123,7 @@ export default function Home() {
       }
     }
 
-    if(newPostContent.length < 3 || newPostContent.length > 255) {
+    if(newPostContent.replace(/\s/g, '').length < 3 || newPostContent.replace(/\s/g, '').length > 255) {
       return;
     }
 
