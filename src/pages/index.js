@@ -123,6 +123,10 @@ export default function Home() {
       }
     }
 
+    if(newPostContent.length < 3 || newPostContent.length > 255) {
+      return;
+    }
+
     // Add the new post to the database
     const { data, error } = await supabase
       .from('feed')
