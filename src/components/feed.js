@@ -4,7 +4,6 @@ import { SmileyIcon } from '@primer/octicons-react';
 import { useState, useEffect } from 'react';
 import emojiRegex from 'emoji-regex';
 import regexifyString from 'regexify-string';
-const emojireg = emojiRegex();
 
 export function Feed({ data }) {
     const supabase = useSupabaseClient();
@@ -137,7 +136,7 @@ export function Feed({ data }) {
             </p>
             <p className="pt-1">{
             regexifyString({
-              pattern: emojireg,
+              pattern: emojiRegex(),
               decorator: (match, index) => {
                 let emoji = match.codePointAt(0).toString(16) + '-';
 
