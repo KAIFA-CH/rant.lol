@@ -7,5 +7,5 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react';
 export default function AuthPage() {
     const supabase = useSupabaseClient();
 
-    return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+    return <Auth supabaseClient={supabase} providers={[]} magicLink={true} view='magic_link' appearance={{ theme: ThemeSupa }} />
 }

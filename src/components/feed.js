@@ -2,11 +2,9 @@ import Picker, { Emoji } from 'emoji-picker-react';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { SmileyIcon } from '@primer/octicons-react';
 import { useState, useEffect } from 'react';
-
-function convertUnicode(input) {
-  return input.replace(/\\+u([0-9a-fA-F]{4})/g, (a,b) =>
-    String.fromCharCode(parseInt(b, 16)));
-}
+import emojiRegex from 'emoji-regex';
+import regexifyString from 'regexify-string';
+const emojireg = emojiRegex();
 
 export function Feed({ data }) {
     const supabase = useSupabaseClient();
@@ -131,14 +129,27 @@ export function Feed({ data }) {
           setSelectedEPostId(postId);
         }
       };
-
     return data.map(post => (
         <div key={post.id} className="Box mb-3">
         <div className="Box-body">
             <p className="mb-1">
             <img className="avatar avatar-small" alt={post.accounts ? post.accounts.username : 'nobody'} src={post.accounts ? `https://seccdn.libravatar.org/avatar/${post.accounts.avatar}?s=40&d=mm` : 'https://seccdn.libravatar.org/static/img/nobody.png?size=40'} width="20" height="20" style={{borderRadius: "20px"}} /> {post.accounts ? post.accounts.username : 'Anonymous'} - {new Date(post.created_at).toLocaleString()}
             </p>
-            <p className="pt-1">{post.content}</p>
+            <p className="pt-1">{
+            regexifyString({
+              pattern: emojireg,
+              decorator: (match, index) => {
+                let emoji = match.codePointAt(0).toString(16) + '-';
+
+                for (let i = 2; i < match.length; i++) {
+                  emoji = emoji + match.codePointAt(i).toString(16) + '-';
+                }
+;
+                return <Emoji key={match} emojiStyle='fluentui' emojiVersion='13.0' getEmojiUrl={(uni, sty) => {return `https://cdn.jsdelivr.net/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/${uni}.png`}} unified={emoji.replace(/-*$/, '')} size={14} />
+              },
+              input: post.content,
+            })
+            }</p>
             <div className="pt-1">
             <details className="dropdown details-reset details-overlay d-inline-block">
             <summary className="btn-octicon circle color-bg-subtle ml-0 border" aria-disabled={user ? undefined : 'true'} title={!user ? 'Register to react' : undefined} type="button" onClick={() => toggleEmojiPicker(post.id)}><SmileyIcon fill='#8b949e' size={16} /></summary>
