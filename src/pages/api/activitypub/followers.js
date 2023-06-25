@@ -37,13 +37,7 @@ export default async function followers(req, res) {
 export async function saveFollower(follower, user) {
   const followers = await supabase.from('accounts').select('followers').ilike('username', `${user.data.username}`).maybeSingle();
   let orderedItems = [];
-  if (followers.data) {
-    orderedItems = followers.data;
-    if (orderedItems.includes(follower)) {
-      console.log(`follower ${follower} already exists`);
-      return;
-    }
-  }
+
   orderedItems.push(follower);
 
   const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', user.data.username);
