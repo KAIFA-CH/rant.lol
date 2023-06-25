@@ -14,7 +14,7 @@ export default async function Post(req, res) {
     const post = await supabase.from('feed').select('content, created_at, user_id').eq('id', `${id}`).maybeSingle();
     const getuser = await supabase.from('accounts').select('id, username').eq('id', `${post.data.user_id}`).maybeSingle();
     const note = generateNote(origin, post.data);
-    respondActivityJSON(res, note);
+    respondActivityJSON(res, note, getuser.data.username);
 }
 
 const generateNote = (origin, post, user) => {

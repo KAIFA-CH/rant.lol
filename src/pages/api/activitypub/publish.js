@@ -54,7 +54,7 @@ export default async function publish(req, res) {
   }
   const createMessage = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: `https://${origin}/api/activitypub/post/${post.id}?create=true`,
+    id: `https://${origin}/api/activitypub/post/${post.data.id}?create=true`,
     type: "Create",
     actor: `https://${origin}/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol`,
     to: ["https://www.w3.org/ns/activitystreams#Public"],
