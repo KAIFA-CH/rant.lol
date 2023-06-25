@@ -3,6 +3,8 @@ import { Sha256Signer } from "../../../components/activitypub/signpub";
 import { createHash } from "crypto";
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 
+let getuser;
+
 export default async function inbox(req, res) {
   if (req.method !== "POST") {
     res.statusCode = 404;
@@ -17,7 +19,7 @@ export default async function inbox(req, res) {
   }
   const user = /\:(.*)\@/g.exec(req.query.user)[1];
   const supabase = createPagesBrowserClient();
-  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
+  getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
