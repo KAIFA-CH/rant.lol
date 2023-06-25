@@ -47,7 +47,7 @@ export async function saveFollower(follower, user) {
   orderedItems.push(follower);
   // Add the reaction to the post
   if (followers.data != null) {
-    let newData = { orderedItems, ...followers.data };
+    let newData = [ orderedItems, ...followers.data ];
     const { data, error } = await supabase.from('account').update({ followers: newData }).eq('username', user.data.username);
     Error(error);
   } else {
