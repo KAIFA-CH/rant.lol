@@ -34,8 +34,8 @@ export default async function followers(req, res) {
   respondActivityJSON(res, response);
 }
 
-export async function saveFollower(follower) {
-  
+export async function saveFollower(follower, user) {
+  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
   const followers = await supabase.from('accounts').select('followers').ilike('username', `${getuser.data.username}`).maybeSingle();
   let orderedItems = [];
   if (followers.data != null) {

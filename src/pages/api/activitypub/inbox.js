@@ -76,7 +76,7 @@ export default async function inbox(req, res) {
     console.log("follower to accept & save");
     // Accept & save to my own db
     await sendAcceptMessage(message, origin);
-    await saveFollower(message.actor);
+    await saveFollower(message.actor, getuser);
   }
   if (message.type == "Like") {
     await saveLike(message);
