@@ -65,6 +65,7 @@ export default async function actor(req, res) {
     summary: "Vent/Rant about your life or other stuff.",
     inbox: `https://rant.lol/api/activitypub/inbox?user=acct:${getuser.data.username}@rant.lol`,
     outbox: `https://rant.lol/api/activitypub/outbox?user=acct:${getuser.data.username}@rant.lol`,
+    followers: `https://rant.lol/api/activitypub/followers?user=acct:${getuser.data.username}@rant.lol`,
     // followers: `https://rant.lol/api/activitypub/followers`,
     // following: `${origin}/api/activitypub/following`,
     icon: {
