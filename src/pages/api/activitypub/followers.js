@@ -37,7 +37,7 @@ export default async function followers(req, res) {
 export async function saveFollower(follower, user) {
   const followers = await supabase.from('accounts').select('followers').ilike('username', `${user.data.username}`).maybeSingle();
   let orderedItems = [];
-  if (followers.data != null) {
+  if (followers.data) {
     orderedItems = followers.data;
     if (orderedItems.includes(follower)) {
       console.log(`follower ${follower} already exists`);
@@ -45,15 +45,9 @@ export async function saveFollower(follower, user) {
     }
   }
   orderedItems.push(follower);
-  // Add the reaction to the post
-  if (followers.data != null) {
-    let newData = [ orderedItems, ...followers.data ];
-    const { data, error } = await supabase.from('account').update({ followers: newData }).eq('username', user.data.username);
-    Error(error);
-  } else {
-    const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', user.data.username);
-    Error(error);
-  }
+
+  const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', user.data.username);
+  Error(error);
 }
 
 export async function removeFollower(follower) {
