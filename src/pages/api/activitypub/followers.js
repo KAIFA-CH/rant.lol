@@ -28,7 +28,7 @@ export default async function followers(req, res) {
     "@context": "https://www.w3.org/ns/activitystreams",
     id: `https://${origin}/api/activitypub/followers?user=acct:${getuser.data.username}@rant.lol`,
     type: "OrderedCollection",
-    totalItems: followers.length,
+    totalItems: followers.length == null ? 0 : followers.length,
     orderedItems: followers,
   };
   respondActivityJSON(res, response);
