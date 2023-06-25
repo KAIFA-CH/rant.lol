@@ -35,8 +35,7 @@ export default async function followers(req, res) {
 }
 
 export async function saveFollower(follower, user) {
-  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
-  const followers = await supabase.from('accounts').select('followers').ilike('username', `${getuser.data.username}`).maybeSingle();
+  const followers = await supabase.from('accounts').select('followers').ilike('username', `${user.data.username}`).maybeSingle();
   let orderedItems = [];
   if (followers.data != null) {
     orderedItems = followers.data;
@@ -49,10 +48,10 @@ export async function saveFollower(follower, user) {
   // Add the reaction to the post
   if (followers.data != null) {
     let newData = { orderedItems, ...followers.data };
-    const { data, error } = await supabase.from('account').update({ followers: newData }).eq('username', getuser.data.username);
+    const { data, error } = await supabase.from('account').update({ followers: newData }).eq('username', user.data.username);
     Error(error);
   } else {
-    const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', getuser.data.username);
+    const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', user.data.username);
     Error(error);
   }
 }
