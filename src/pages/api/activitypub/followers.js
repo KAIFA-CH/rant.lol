@@ -52,7 +52,7 @@ export async function saveFollower(follower) {
     const { data, error } = await supabase.from('account').update({ followers: newData }).eq('username', getuser.data.username);
     Error(error);
   } else {
-    const { data, error } = await supabase.from('account').update({ followers: follower }).eq('username', getuser.data.username);
+    const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', getuser.data.username);
     Error(error);
   }
 }
