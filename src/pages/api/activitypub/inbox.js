@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Sha256Signer } from "../../../components/activitypub/signpub";
 import { createHash } from "crypto";
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { saveFollower } from "./followers";
 
 let getuser;
 
@@ -75,6 +76,7 @@ export default async function inbox(req, res) {
     console.log("follower to accept & save");
     // Accept & save to my own db
     await sendAcceptMessage(message, origin);
+    await saveFollower(message.actor);
   }
   if (message.type == "Like") {
     await saveLike(message);
