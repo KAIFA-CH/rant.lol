@@ -4,6 +4,7 @@ import { SmileyIcon } from '@primer/octicons-react';
 import { useState, useEffect } from 'react';
 import emojiRegex from 'emoji-regex';
 import regexifyString from 'regexify-string';
+import Image from 'next/image';
 
 export function Feed({ data }) {
     const supabase = useSupabaseClient();
@@ -132,7 +133,7 @@ export function Feed({ data }) {
         <div key={post.id} className="Box mb-3">
         <div className="Box-body">
             <p className="mb-1">
-            <img className="avatar avatar-small" alt={post.accounts ? post.accounts.username : 'nobody'} src={post.accounts ? `https://seccdn.libravatar.org/avatar/${post.accounts.avatar}?s=40&d=mm` : 'https://seccdn.libravatar.org/static/img/nobody.png?size=40'} width="20" height="20" style={{borderRadius: "20px"}} /> {post.accounts ? post.accounts.username : 'Anonymous'} - {new Date(post.created_at).toLocaleString()}
+            <Image className="avatar avatar-small" alt={post.accounts ? post.accounts.username : 'nobody'} src={post.accounts ? `https://seccdn.libravatar.org/avatar/${post.accounts.avatar}?s=40&d=mm` : 'https://seccdn.libravatar.org/static/img/nobody.png?size=40'} width="20" height="20" style={{borderRadius: "20px"}} /> {post.accounts ? post.accounts.username : 'Anonymous'} - {new Date(post.created_at).toLocaleString()}
             </p>
             <p className="pt-1">{
             regexifyString({
