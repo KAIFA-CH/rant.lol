@@ -71,7 +71,7 @@ export default async function actor(req, res) {
     icon: {
       type: "Image",
       mediaType: "image/png",
-      url: `https://seccdn.libravatar.org/avatar/${getuser.data.avatar}?s=40&d=mm`,
+      url: `https://seccdn.libravatar.org/avatar/${getuser.data.avatar}?s=512&d=mm`,
     },
     publicKey: {
       id: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol#main-key`,
