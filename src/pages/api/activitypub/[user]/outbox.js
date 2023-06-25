@@ -13,21 +13,26 @@ export default async function outbox(req, res) {
     res.end(`{"error": "unknown resource"}`);
     return;
   }
-  const user = /\:(.*)\@/g.exec(req.query.user)[1];
   const supabase = createPagesBrowserClient();
-  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
+  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${req.query.user}`).maybeSingle();
+
+  //check if user exists
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
   }
-  let posts = await supabase.from('feed').select('content, created_at').eq('user_id', `${getuser.data.id}`);
+
+  //Get all feed posts from user and sort them by latest to oldest
+  let posts = await supabase.from('feed').select('id, content, created_at').eq('user_id', `${getuser.data.id}`);
   posts = posts.data.sort((a,b)=>{
     return new Date(b.created_at) - new Date(a.created_at);
   });
+
+  // Construct outbox message and respond with it
   const outbox = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: `https://${origin}/api/activitypub/outbox?user=acct:${getuser.data.username}@rant.lol`,
+    id: `https://${origin}/api/activitypub/${getuser.data.username}/outbox`,
     summary: "Vent/Rant about your life or other stuff.",
     type: "OrderedCollection",
     totalItems: posts.length,
@@ -39,14 +44,17 @@ export default async function outbox(req, res) {
 export const generateNote = (origin, post, user) => {
   return {
     "@context": ["https://www.w3.org/ns/activitystreams"],
-    id: `https://${origin}/`,
+    id: `https://${origin}/#${post.id}`,
     type: "Note",
     published: new Date(post.created_at).toUTCString(),
-    attributedTo: `https://${origin}/api/activitypub/actor?user=acct:${user}@rant.lol`,
+    attributedTo: `https://${origin}/api/activitypub/${user}/actor`,
     // actor: `${origin}/api/activitypub/actor`,
     content: post.content,
-    url: `https://${origin}/`,
+    url: `https://${origin}/#${post.id}`,
     to: ["https://www.w3.org/ns/activitystreams#Public"],
+    cc: [`https://${origin}/api/activitypub/${user}/followers`],
+    published: post.created_at
+
     // "replies": {
     //   "id": `${origin}/api/activitypub/reply/${post.id}`,
     //   "type": "Collection",

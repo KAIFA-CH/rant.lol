@@ -23,7 +23,7 @@ const generateNote = (origin, post, user) => {
       id: `https://${origin}/`,
       type: "Note",
       published: new Date(post.created_at).toUTCString(),
-      attributedTo: `https://${origin}/api/activitypub/actor?user=acct:${user}@rant.lol`,
+      attributedTo: `https://${origin}/api/activitypub/${user}/actor`,
       // actor: `${origin}/api/activitypub/actor`,
       content: post.content,
       url: `https://${origin}/`,

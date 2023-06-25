@@ -1,6 +1,5 @@
-import { generateNote } from "./[user]/outbox";
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
-import { Sha256Signer } from "../../../components/activitypub/signpub";
+import { Sha256Signer } from "../../../../components/activitypub/signpub";
 import { createHash } from "crypto";
 
 async function sendSignedRequest(publicKeyId, endpoint, object) {
@@ -40,35 +39,31 @@ async function sendSignedRequest(publicKeyId, endpoint, object) {
 
 export default async function publish(req, res) {
   const origin = req.headers.host;
-  const id = req.query.id;
-  if (!id) {
-    res.json({ error: "missing id" });
+  const user = req.query.user;
+  if (!user) {
+    res.json({ error: "missing username" });
   }
   const supabase = createPagesBrowserClient();
+  const getuser = await supabase.from('accounts').select('id, username, followers').ilike('username', `${user}`).maybeSingle();
 
-  // Get post info via id and then proceed to also grab poster info
-  const post = await supabase.from('feed').select('id ,content, created_at, user_id').eq('id', `${id}`).maybeSingle();
-  const getuser = await supabase.from('accounts').select('id, username, followers').eq('id', `${post.data.user_id}`).maybeSingle();
-
-  // Check if user exists since anonymous is a possible poster so it should return an error.
+  // Check if user exists
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
   }
+  // Get actor object
+  const response = await fetch(`https://${origin}/api/activitypub/${getuser.data.username}/actor`);
+  const resdata = await response.json();
 
-  // Construct Create Message with the note as object
+  // Create update message
   const createMessage = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: `https://${origin}/api/activitypub/post/${post.data.id}?create=true`,
-    type: "Create",
-    actor: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
-    to: ["https://www.w3.org/ns/activitystreams#Public"],
-    cc: [`https://${origin}/api/activitypub/${getuser.data.username}/followers`],
-    object: generateNote(origin, post.data, getuser.data.username),
+    type: "Update",
+    object: resdata,
   };
 
-  // Post to each follower that a new message was created and sent it out.
+  // Post update message to all followers
   getuser.data.followers.forEach(async (follower) => {
     const response = await sendSignedRequest(
       `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,

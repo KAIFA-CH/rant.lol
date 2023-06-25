@@ -44,28 +44,33 @@ export default async function actor(req, res) {
     res.end(`{"error": "unknown resource"}`);
     return;
   }
-  const user = /\:(.*)\@/g.exec(req.query.user)[1];
-  const getuser = await supabase.from('accounts').select('id, username, avatar').ilike('username', `${user}`).maybeSingle();
-  
+
+  const getuser = await supabase.from('accounts').select('id, username, avatar, created_at').ilike('username', `${req.query.user}`).maybeSingle();
+  // Check if user exists
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
   }
 
+  // Respond with all required information
+
   respondActivityJSON(res, {
     "@context": [
       "https://www.w3.org/ns/activitystreams",
       "https://w3id.org/security/v1",
     ],
-    id: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol`,
+    id: `https://rant.lol/api/activitypub/${getuser.data.username}/actor`,
     type: "Person",
     name: getuser.data.username,
     preferredUsername: getuser.data.username,
     summary: "Vent/Rant about your life or other stuff.",
-    inbox: `https://rant.lol/api/activitypub/inbox?user=acct:${getuser.data.username}@rant.lol`,
-    outbox: `https://rant.lol/api/activitypub/outbox?user=acct:${getuser.data.username}@rant.lol`,
-    followers: `https://rant.lol/api/activitypub/followers?user=acct:${getuser.data.username}@rant.lol`,
+    inbox: `https://rant.lol/api/activitypub/${getuser.data.username}/inbox`,
+    outbox: `https://rant.lol/api/activitypub/${getuser.data.username}/outbox`,
+    followers: `https://rant.lol/api/activitypub/${getuser.data.username}/followers`,
+    manuallyApprovesFollowers: false,
+    discoverable: true,
+    published: getuser.data.created_at,
     // followers: `https://rant.lol/api/activitypub/followers`,
     // following: `${origin}/api/activitypub/following`,
     icon: {
@@ -74,8 +79,10 @@ export default async function actor(req, res) {
       url: `https://seccdn.libravatar.org/avatar/${getuser.data.avatar}?s=512&d=mm`,
     },
     publicKey: {
-      id: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol#main-key`,
-      owner: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol`,
+      "@context": "https://w3id.org/security/v1",
+      "@type": "Key",
+      id: `https://rant.lol/api/activitypub/${getuser.data.username}/actor#main-key`,
+      owner: `https://rant.lol/api/activitypub/${getuser.data.username}/actor`,
       publicKeyPem: process.env.ACTIVITYPUB_PUBLIC_KEY
     }
   });

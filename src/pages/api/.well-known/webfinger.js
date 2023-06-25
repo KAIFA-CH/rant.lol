@@ -12,29 +12,27 @@ export default async function webfinger(req, res) {
     return;
   }
 
+  // Filter out username and get data
   const user = /\:(.*)\@/g.exec(resource)[1];
   const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
   
+  // Check if user exists
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
   }
 
+  // Return Webfinger data
   res.statusCode = 200;
   res.end(`{  
     "subject": "acct:${getuser.data.username}@rant.lol",
     "aliases": [],
     "links": [
       {
-        "rel": "http://webfinger.net/rel/profile-page",
-        "type": "text/html",
-        "href": "https://rant.lol/about"
-      },
-      {
         "rel": "self",
         "type": "application/activity+json",
-        "href": "https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol"
+        "href": "https://rant.lol/api/activitypub/${getuser.data.username}/actor"
       }
     ]
   }`);

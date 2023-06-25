@@ -16,48 +16,55 @@ export default async function followers(req, res) {
     res.end(`{"error": "unknown resource"}`);
     return;
   }
-  const user = /\:(.*)\@/g.exec(req.query.user)[1];
-  getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
+  getuser = await supabase.from('accounts').select('id, username').ilike('username', `${req.query.user}`).maybeSingle();
+
+  // Check if user exists
   if (!getuser.data) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
   }
+
+  // Get all followers and then return an activity response.
   const followers = await getAllFollowers();
   const response = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: `https://${origin}/api/activitypub/followers?user=acct:${getuser.data.username}@rant.lol`,
+    id: `https://${origin}/api/activitypub/${getuser.data.username}/followers`,
     type: "OrderedCollection",
-    totalItems: followers.length == null ? 0 : followers.length,
-    orderedItems: followers,
+    totalItems: !followers.followers ? 0 : followers.followers.length,
+    orderedItems: followers.followers,
   };
   respondActivityJSON(res, response);
 }
 
 export async function saveFollower(follower, user) {
   const followers = await supabase.from('accounts').select('followers').ilike('username', `${user.data.username}`).maybeSingle();
-  let orderedItems = [];
+  let orderedItems = !followers.data.followers ? [] : followers.data.followers;
+
+  if (orderedItems && orderedItems.includes(follower)) {
+    console.log('already following');
+    return;
+  }
 
   orderedItems.push(follower);
 
-  const { data, error } = await supabase.from('account').update({ followers: orderedItems }).eq('username', user.data.username);
-  Error(error);
+  const { data, error } = await supabase.from('accounts').update({ followers: orderedItems }).eq('username', user.data.username);
 }
 
-export async function removeFollower(follower) {
-  const followers = await getCollection(FOLLOWERS_COLLECTION);
-  const data = await followers.findOne();
-  let orderedItems = [];
-  if (data) {
-    orderedItems = data.orderedItems;
+export async function removeFollower(follower, user) {
+  const followers = await supabase.from('accounts').select('followers').ilike('username', `${user.data.username}`).maybeSingle();
+  let orderedItems = !followers.data ? [] : followers.data.followers;
+
+  if (followers.data) {
     const index = orderedItems.indexOf(follower);
     if (index !== -1) {
       orderedItems.splice(index, 1);
-      await followers.updateOne({}, { $set: { orderedItems } });
+      const { data, error } = await supabase.from('accounts').update({ followers: orderedItems }).eq('username', user.data.username);
       console.log(`follower ${follower} removed successfully`);
       return;
     }
   }
+  
   console.log(`follower ${follower} not found`);
 }
 
