@@ -45,7 +45,7 @@ export default async function publish(req, res) {
     res.json({ error: "missing id" });
   }
   const supabase = createPagesBrowserClient();
-  const post = await supabase.from('feed').select('content, created_at, user_id').eq('id', `${id}`).maybeSingle();
+  const post = await supabase.from('feed').select('id ,content, created_at, user_id').eq('id', `${id}`).maybeSingle();
   const getuser = await supabase.from('accounts').select('id, username').eq('id', `${post.data.user_id}`).maybeSingle();
   if (!getuser.data) {
     res.statusCode = 404;
