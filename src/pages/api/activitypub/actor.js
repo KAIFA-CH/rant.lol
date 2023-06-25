@@ -45,7 +45,7 @@ export default async function actor(req, res) {
     return;
   }
   const user = /\:(.*)\@/g.exec(req.query.user)[1];
-  const getuser = await supabase.from('accounts').select('id, username').ilike('username', `${user}`).maybeSingle();
+  const getuser = await supabase.from('accounts').select('id, username, avatar').ilike('username', `${user}`).maybeSingle();
   
   if (!getuser.data) {
     res.statusCode = 404;
@@ -60,7 +60,7 @@ export default async function actor(req, res) {
     ],
     id: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol`,
     type: "Person",
-    name: "rant.lol",
+    name: getuser.data.username,
     preferredUsername: getuser.data.username,
     summary: "Vent/Rant about your life or other stuff.",
     inbox: `https://rant.lol/api/activitypub/inbox?user=acct:${getuser.data.username}@rant.lol`,
@@ -70,7 +70,7 @@ export default async function actor(req, res) {
     icon: {
       type: "Image",
       mediaType: "image/png",
-      url: `https://rant.lol/icon.png`,
+      url: `https://seccdn.libravatar.org/avatar/${getuser.data.avatar}?s=40&d=mm`,
     },
     publicKey: {
       id: `https://rant.lol/api/activitypub/actor?user=acct:${getuser.data.username}@rant.lol#main-key`,
