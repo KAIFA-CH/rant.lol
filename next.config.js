@@ -15,6 +15,12 @@ const nextConfig = {
         port: '',
         pathname: '/static/img/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.jsdelivr.net',
+        port: '',
+        pathname: '/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/**',
+      },
     ],
   },
   async rewrites() {

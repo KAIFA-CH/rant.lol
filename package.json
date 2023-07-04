@@ -11,6 +11,8 @@
   "dependencies": {
     "@primer/css": "^21.0.2",
     "@primer/octicons-react": "^19.1.0",
+    "@primer/react": "^35.26.0",
+    "@primer/react-brand": "^0.20.0",
     "@supabase/auth-helpers-nextjs": "^0.7.1",
     "@supabase/auth-helpers-react": "^0.4.0",
     "@supabase/auth-ui-react": "^0.4.2",
@@ -21,7 +23,6 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
     "next": "13.4.4",
-    "primer": "^11.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "regexify-string": "^1.0.19",
