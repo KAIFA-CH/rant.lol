@@ -143,8 +143,8 @@ export function Feed({ data }) {
 
                 for (let i = 2; i < match.length; i++) {
                   emoji = emoji + match.codePointAt(i).toString(16) + '-';
-                }
-;
+                };
+                
                 return <Emoji key={match} emojiStyle='fluentui' emojiVersion='13.0' getEmojiUrl={(uni, sty) => {return `https://cdn.jsdelivr.net/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/${uni}.png`}} unified={emoji.replace(/-*$/, '')} size={14} />
               },
               input: post.content,

@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Feed } from '@/components/feed';
 import { UsernameDialog } from '@/components/usernamedialog';
+import { Button } from '@primer/react';
+import { PencilIcon } from '@primer/octicons-react';
 
 export default function Home() {
   const [feedData, setFeedData] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [HasUsername, setHasUsername] = useState(true);
+  const [limit, setLimit] = useState(8);
   const supabase = useSupabaseClient();
   const user = useUser();
+  const bottomRef = useRef(null);
 
   async function listenToFeedUpdates() {
     try {
@@ -107,6 +111,23 @@ export default function Home() {
     listenToFeedUpdates();
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        bottomRef.current &&
+        window.innerHeight + window.scrollY >= bottomRef.current.offsetTop
+      ) {
+        setLimit((prevLimit) => prevLimit + 8);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleNewPostChange = (event) => {
     setNewPostContent(event.target.value);
   };
@@ -137,23 +158,27 @@ export default function Home() {
     setNewPostContent('');
   };
 
+  const Pencil = () => {return <PencilIcon size={16}></PencilIcon>};
+  
   return (
-  <div className="container-xl mt-5">
-  {!HasUsername && <UsernameDialog />}
-  <div className="d-flex justify-content-center">
-  <form onSubmit={handleNewPostSubmit} className="flex-items-center">
-  <textarea
-           value={newPostContent}
-           onChange={handleNewPostChange}
-           className="form-control mb-3 mr-2"
-           placeholder="What's on your mind?"
-         />
-  <button type="submit" className="btn btn-primary mb-3">
-  Post
-  </button>
-  </form>
-  </div>
-  <Feed data={feedData} />
-</div>
-);
+    <div className="container-md mt-5">
+    {!HasUsername && <UsernameDialog />}
+      <div className="text-center">
+        <form onSubmit={handleNewPostSubmit}>
+        <textarea
+          value={newPostContent}
+          onChange={handleNewPostChange}
+          className="form-control mb-2"
+          style={{ height: "100px", width: "500px", resize: "none" }}
+          placeholder="What's on your mind?"
+        />
+        <Button variant="primary" leadingIcon={Pencil} size="large" type="submit" className="mb-3 mx-auto">Publish</Button>
+        </form>
+      </div>
+    <Feed data={feedData.slice(0, limit)} />
+    {feedData.length > limit && (
+        <div ref={bottomRef} />
+    )}
+    </div>
+  );
 }

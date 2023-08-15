@@ -32,21 +32,20 @@ export function Head() {
         <Header style={{backgroundColor: "#191d22 !important"}}>
             <Header.Item>
                 <Header.Link href="#" style={{textDecorationLine: "none"}} sx={{fontSize: 2}}>
-                    <Image src="https://cdn.jsdelivr.net/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/1f621.png" width={32} height={32} style={{marginRight: 4}} />
+                    <Image src="https://cdn.jsdelivr.net/gh/mar0xy/fluentui-twemoji-emojis@main/unicode/3d/1f621.png" alt="Angry Emoji" width={32} height={32} style={{marginRight: 4}} />
                     <span>rant.lol</span>
                 </Header.Link>
             </Header.Item>
-            <Header.Item full>Home</Header.Item>
+            <Header.Item full></Header.Item>
             {user && (
-            <Header.Item sx={{mr: 0}}>
-                <Image src={!ProfilePicture ? "https://seccdn.libravatar.org/static/img/nobody.png" : ProfilePicture} style={{borderRadius: 3}} width={20} height={20} alt="@octocat" />
-            </Header.Item>
+                <Header.Item sx={{mr: 0}}>
+                    <Image src={!ProfilePicture ? "https://seccdn.libravatar.org/static/img/nobody.png" : ProfilePicture} style={{borderRadius: 3}} width={20} height={20} alt="pfp" />
+                </Header.Item>
+            ) || !user && (
+                <Header.Item sx={{mr: 0}}>
+                    <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="Anonymous" />
+                </Header.Item>
             )}
-            {!user && (
-            <Header.Item sx={{mr: 0}}>
-                <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="@octocat" />
-            </Header.Item>
-            )} 
         </Header>
     )
 }

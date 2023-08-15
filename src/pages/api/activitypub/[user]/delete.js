@@ -37,7 +37,7 @@ async function sendSignedRequest(publicKeyId, endpoint, object) {
     return response;
 }
 
-export default async function update(req, res) {
+export default async function deletepub(req, res) {
   const origin = req.headers.host;
   const user = req.query.user;
   if (!user) {
@@ -52,16 +52,17 @@ export default async function update(req, res) {
     res.end(`{"error": "unknown resource"}`);
     return;
   }
-  
-  // Get actor object
-  const response = await fetch(`https://${origin}/api/activitypub/${getuser.data.username}/actor`);
-  const resdata = await response.json();
 
-  // Create update message
+  // Create delete message
   const createMessage = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    type: "Update",
-    object: resdata,
+    id: `https://${origin}/534242423`,
+    type: "Delete",
+    actor: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
+    object: {
+      id: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
+      type: "Tombstone"
+    },
   };
 
   // Post update message to all followers
