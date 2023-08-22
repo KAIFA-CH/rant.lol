@@ -1,4 +1,4 @@
-import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import { Sha256Signer } from "../../../../components/activitypub/signpub";
 import { createHash } from "crypto";
 
@@ -43,7 +43,15 @@ export default async function deletepub(req, res) {
   if (!user) {
     res.json({ error: "missing username" });
   }
-  const supabase = createPagesBrowserClient();
+  const supabase = createPagesServerClient({req, res});
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    return res.status(401).json({
+      error: 'not_authenticated',
+      description: 'The user does not have an active session or is not authenticated',
+    })
+  }
+
   const getuser = await supabase.from('accounts').select('id, username, followers').ilike('username', `${user}`).maybeSingle();
 
   // Check if user exists
@@ -53,27 +61,43 @@ export default async function deletepub(req, res) {
     return;
   }
 
+  if (getuser.data.id !== session.user.id) {
+    return res.status(401).json({
+      error: 'not_authorized',
+      description: 'The logged-in user does not correspond to the user in the request',
+    })
+  }
+
   // Create delete message
   const createMessage = {
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: `https://${origin}/534242423`,
+    id: `https://${origin}/api/activitypub/${getuser.data.username}/actor#delete`,
     type: "Delete",
     actor: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
-    object: {
-      id: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
-      type: "Tombstone"
-    },
+    object: `https://${origin}/api/activitypub/${getuser.data.username}/actor`,
+    published: new Date().toUTCString()
   };
 
   // Post update message to all followers
-  getuser.data.followers.forEach(async (follower) => {
+  if (getuser.data.followers.length > 0) {
+    getuser.data.followers.forEach(async (follower) => {
+      const response = await sendSignedRequest(
+        `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
+        new URL(`${follower}/inbox`),
+        createMessage
+      );
+      const text = await response.text();
+      console.log("Following result", response.status, response.statusText, text);
+    })
+  } else {
     const response = await sendSignedRequest(
       `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
-      new URL(`${follower}/inbox`),
+      new URL(`https://mastodon.social/inbox`),
+      new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
       createMessage
     );
     const text = await response.text();
     console.log("Following result", response.status, response.statusText, text);
-  })
+  }
   res.json({"status": "ok"});
 }

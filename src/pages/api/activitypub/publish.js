@@ -44,10 +44,18 @@ export default async function publish(req, res) {
   if (!id) {
     res.json({ error: "missing id" });
   }
-  const supabase = createPagesBrowserClient();
+
+  const supabase = createPagesServerClient({req, res});
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    return res.status(401).json({
+      error: 'not_authenticated',
+      description: 'The user does not have an active session or is not authenticated',
+    })
+  }
 
   // Get post info via id and then proceed to also grab poster info
-  const post = await supabase.from('feed').select('id ,content, created_at, user_id').eq('id', `${id}`).maybeSingle();
+  const post = await supabase.from('feed').select('id, content, created_at, user_id').eq('id', `${id}`).maybeSingle();
   const getuser = await supabase.from('accounts').select('id, username, followers').eq('id', `${post.data.user_id}`).maybeSingle();
 
   // Check if user exists since anonymous is a possible poster so it should return an error.
@@ -55,6 +63,13 @@ export default async function publish(req, res) {
     res.statusCode = 404;
     res.end(`{"error": "unknown resource"}`);
     return;
+  }
+
+  if (post.data.user_id !== session.user.id) {
+    return res.status(401).json({
+      error: 'not_authorized',
+      description: 'The user_id of the logged-in user does not correspond to the post\'s user_id in the request',
+    })
   }
 
   // Construct Create Message with the note as object
@@ -69,14 +84,25 @@ export default async function publish(req, res) {
   };
 
   // Post to each follower that a new message was created and sent it out.
-  getuser.data.followers.forEach(async (follower) => {
+  if (getuser.data.followers.length > 0) {
+    getuser.data.followers.forEach(async (follower) => {
+      const response = await sendSignedRequest(
+        `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
+        new URL(`${follower}/inbox`),
+        createMessage
+      );
+      const text = await response.text();
+      console.log("Following result", response.status, response.statusText, text);
+    })
+  } else {
     const response = await sendSignedRequest(
       `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
-      new URL(`${follower}/inbox`),
+      new URL(`https://mastodon.social/inbox`),
+      new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
       createMessage
     );
     const text = await response.text();
     console.log("Following result", response.status, response.statusText, text);
-  })
+  }
   res.json({"status": "ok"});
 }

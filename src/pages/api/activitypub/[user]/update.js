@@ -40,9 +40,11 @@ async function sendSignedRequest(publicKeyId, endpoint, object) {
 export default async function update(req, res) {
   const origin = req.headers.host;
   const user = req.query.user;
+
   if (!user) {
     res.json({ error: "missing username" });
   }
+
   const supabase = createPagesBrowserClient();
   const getuser = await supabase.from('accounts').select('id, username, followers').ilike('username', `${user}`).maybeSingle();
 
@@ -65,14 +67,25 @@ export default async function update(req, res) {
   };
 
   // Post update message to all followers
-  getuser.data.followers.forEach(async (follower) => {
+  if (getuser.data.followers.length > 0) {
+    getuser.data.followers.forEach(async (follower) => {
+      const response = await sendSignedRequest(
+        `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
+        new URL(`${follower}/inbox`),
+        createMessage
+      );
+      const text = await response.text();
+      console.log("Following result", response.status, response.statusText, text);
+    })
+  } else {
     const response = await sendSignedRequest(
       `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
-      new URL(`${follower}/inbox`),
+      new URL(`https://mastodon.social/inbox`),
+      new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
       createMessage
     );
     const text = await response.text();
     console.log("Following result", response.status, response.statusText, text);
-  })
+  }
   res.json({"status": "ok"});
 }
