@@ -84,7 +84,7 @@ export default async function publish(req, res) {
   };
 
   // Post to each follower that a new message was created and sent it out.
-  if (getuser.data.followers & getuser.data.followers.length > 0) {
+  if (getuser.data.followers && getuser.data.followers.length > 0) {
     getuser.data.followers.forEach(async (follower) => {
       const response = await sendSignedRequest(
         `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
