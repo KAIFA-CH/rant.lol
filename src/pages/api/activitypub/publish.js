@@ -1,5 +1,5 @@
 import { generateNote } from "./[user]/outbox";
-import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import { Sha256Signer } from "../../../components/activitypub/signpub";
 import { createHash } from "crypto";
 

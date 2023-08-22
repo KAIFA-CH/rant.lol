@@ -149,11 +149,16 @@ export default function Home() {
     }
 
     // Add the new post to the database
-    const { data, error } = await supabase
+    const { data: newpostdata, error } = await supabase
       .from('feed')
       .insert([{ content: newPostContent, user_id: user ? user.id : null }])
+      .select()
       .single();
     if (error) console.log('error', error);
+
+    if (user) {
+      await fetch(`/api/activitypub/publish?id=${newpostdata.id}`);
+    }
 
     setNewPostContent('');
   };

@@ -71,7 +71,6 @@ export default async function actor(req, res) {
     manuallyApprovesFollowers: false,
     discoverable: true,
     published: getuser.data.created_at,
-    // followers: `https://rant.lol/api/activitypub/followers`,
     // following: `${origin}/api/activitypub/following`,
     icon: {
       type: "Image",
