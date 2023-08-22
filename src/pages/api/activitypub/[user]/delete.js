@@ -79,7 +79,7 @@ export default async function deletepub(req, res) {
   };
 
   // Post update message to all followers
-  if (getuser.data.followers.length > 0) {
+  if (getuser.data.followers && getuser.data.followers.length > 0) {
     getuser.data.followers.forEach(async (follower) => {
       const response = await sendSignedRequest(
         `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
