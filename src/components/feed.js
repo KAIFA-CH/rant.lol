@@ -123,11 +123,7 @@ export function Feed({ data }) {
       };
     
       const toggleEmojiPicker = (postId) => {
-        if (selectedEPostId === postId) {
-          setSelectedEPostId(null);
-        } else {
           setSelectedEPostId(postId);
-        }
       };
     return data.map(post => (
         <div key={post.id} className="Box mb-3">
