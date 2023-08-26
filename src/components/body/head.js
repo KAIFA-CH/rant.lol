@@ -1,11 +1,15 @@
 import { Header } from "@primer/react";
 import { useState, useEffect } from 'react';
+import { ActionMenu, ActionList, IconButton } from '@primer/react';
 import Image from 'next/image';
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
+import { SignInIcon, SignOutIcon } from "@primer/octicons-react";
 
 export function Head() {
     const supabase = useSupabaseClient();
     const user = useUser();
+    const Router = useRouter();
     const [ProfilePicture, setProfilePicture] = useState(null);
 
     useEffect(() => {
@@ -28,6 +32,9 @@ export function Head() {
         fetchProfilePicture();
     }, [supabase, user]);
 
+    const UserAvatar = () => {return <Image src={!ProfilePicture ? "https://seccdn.libravatar.org/static/img/nobody.png" : ProfilePicture} style={{borderRadius: 3}} width={20} height={20} alt="pfp" />};
+    const GuestAvatar = () => {return <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="Anonymous" />};
+
     return (
         <Header style={{backgroundColor: "#191d22 !important"}}>
             <Header.Item>
@@ -39,11 +46,35 @@ export function Head() {
             <Header.Item full></Header.Item>
             {user && (
                 <Header.Item sx={{mr: 0}}>
-                    <Image src={!ProfilePicture ? "https://seccdn.libravatar.org/static/img/nobody.png" : ProfilePicture} style={{borderRadius: 3}} width={20} height={20} alt="pfp" />
+                    <ActionMenu>
+                        <ActionMenu.Anchor><IconButton variant="invisible" icon={UserAvatar} /></ActionMenu.Anchor>
+                        <ActionMenu.Overlay width="auto">
+                            <ActionList>
+                                <ActionList.Item onSelect={() => supabase.auth.signOut()}>
+                                    <ActionList.LeadingVisual>
+                                        <SignOutIcon size={16} />
+                                    </ActionList.LeadingVisual>
+                                    Sign Out
+                                </ActionList.Item>
+                            </ActionList>
+                        </ActionMenu.Overlay>
+                    </ActionMenu>
                 </Header.Item>
             ) || !user && (
                 <Header.Item sx={{mr: 0}}>
-                    <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="Anonymous" />
+                    <ActionMenu>
+                        <ActionMenu.Anchor><IconButton variant="invisible" icon={GuestAvatar} /></ActionMenu.Anchor>
+                        <ActionMenu.Overlay width="auto">
+                            <ActionList>
+                                <ActionList.Item onSelect={() => Router.push("/auth")}>
+                                    <ActionList.LeadingVisual>
+                                        <SignInIcon size={16} />
+                                    </ActionList.LeadingVisual>
+                                    Sign In/Sign Up
+                                </ActionList.Item>
+                            </ActionList>
+                        </ActionMenu.Overlay>
+                    </ActionMenu>
                 </Header.Item>
             )}
         </Header>

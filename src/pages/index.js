@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Feed } from '@/components/feed';
-import { UsernameDialog } from '@/components/usernamedialog';
+import { UsernameDialog } from '@/components/modals/usernamedialog';
 import { Button } from '@primer/react';
 import { PencilIcon } from '@primer/octicons-react';
 
