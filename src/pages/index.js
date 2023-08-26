@@ -166,7 +166,7 @@ export default function Home() {
   const Pencil = () => {return <PencilIcon size={16}></PencilIcon>};
   
   return (
-    <div className="container-md mt-5">
+    <div className="container-md mt-3">
     {!HasUsername && <UsernameDialog />}
       <div className="text-center">
         <form onSubmit={handleNewPostSubmit}>

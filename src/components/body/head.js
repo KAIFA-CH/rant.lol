@@ -1,6 +1,6 @@
 import { Header } from "@primer/react";
 import { useState, useEffect } from 'react';
-import { ActionMenu, ActionList, IconButton } from '@primer/react';
+import { ActionMenu, ActionList, IconButton, Flash } from '@primer/react';
 import Image from 'next/image';
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -35,7 +35,7 @@ export function Head() {
     const UserAvatar = () => {return <Image src={!ProfilePicture ? "https://seccdn.libravatar.org/static/img/nobody.png" : ProfilePicture} style={{borderRadius: 3}} width={20} height={20} alt="pfp" />};
     const GuestAvatar = () => {return <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="Anonymous" />};
 
-    return (
+    return (<>
         <Header style={{backgroundColor: "#191d22 !important"}}>
             <Header.Item>
                 <Header.Link href="#" style={{textDecorationLine: "none"}} sx={{fontSize: 2}}>
@@ -78,5 +78,7 @@ export function Head() {
                 </Header.Item>
             )}
         </Header>
+        <Flash className="text-center container-sm mt-1" sx={{width: "50rem;"}} variant="danger">rant.lol is still in Alpha, Expect bugs and other issues to occur.</Flash>
+        </>
     )
 }
