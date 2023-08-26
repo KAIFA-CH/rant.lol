@@ -86,7 +86,7 @@ export default async function inbox(req, res) {
 
   // if type is like, announce or create do nothing
   if (message.type == "Like") {
-    console.log("no");
+    console.log("Liked");
   }
   if (message.type == "Announce") {
     console.log("announce to save");
