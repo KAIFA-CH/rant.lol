@@ -1,5 +1,5 @@
 export default async function nodeinfoindex(req, res) {
-  res.setHeader("Content-Type", "application/jrd+json");
+  res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=60");
 
   // Return nodeinfo

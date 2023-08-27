@@ -2,7 +2,7 @@ import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 
 export default async function nodeinfodata(req, res) {
     const supabase = createPagesBrowserClient();
-    res.setHeader("Content-Type", "application/jrd+json");
+    res.setHeader("Content-Type", "application/json");
     res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=60");
     const { data, count: usercount } = await supabase.from('accounts').select('id', { count: 'exact', head: true });
     const { data2, count: postcount } = await supabase.from('feed').select('id', { count: 'exact', head: true });
