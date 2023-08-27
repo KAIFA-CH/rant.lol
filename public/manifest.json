@@ -1,0 +1,19 @@
+{
+    "name": "rant.lol",
+    "short_name": "rant.lol",
+    "icons": [
+      {
+        "src": "https://rant.lol/icon36.png",
+        "sizes": "36x36",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ],
+    "theme_color": "#b22c3c",
+    "background_color": "#22272e",
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/",
+    "share_target": {},
+    "shortcuts": []
+  }
