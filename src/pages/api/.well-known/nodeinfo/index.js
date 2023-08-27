@@ -7,7 +7,7 @@ export default async function nodeinfoindex(req, res) {
   res.end(`{  
     "links": {
         "rel": "http://nodeinfo.diaspora.software/ns/schema/2.0",
-        "href": "https://rant.lol/.well-known/nodeinfo/2.0"
+        "href": "https://rant.lol/nodeinfo/2.0"
     }
   }`);
 }

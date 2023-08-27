@@ -36,7 +36,7 @@ export default async function nodeinfodata(req, res) {
           "localComments": 0
         },
         "openRegistrations": true,
-        "metaData": {
+        "metadata": {
             "nodeName": "rant.lol",
             "nodeDescription": "rant.lol is a platform where people can rant/vent about everything in their life anonymously without AP function or as a user with AP function.",
             "maintainer": {
