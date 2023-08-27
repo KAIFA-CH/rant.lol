@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { SignInIcon, SignOutIcon } from "@primer/octicons-react";
+import { default as NextHead } from "next/head";
 
 export function Head() {
     const supabase = useSupabaseClient();
@@ -36,6 +37,22 @@ export function Head() {
     const GuestAvatar = () => {return <Image src="https://seccdn.libravatar.org/static/img/nobody.png" style={{borderRadius: 3}} width={20} height={20} alt="Anonymous" />};
 
     return (<>
+        <NextHead>
+            <title>rant.lol</title>
+            <meta name="title" content="rant.lol" />
+            <meta name="description" content="Vent/Rant about your life and other stuff while also sharing it with the fediverse" />
+            <meta name="theme-color" content="#b22c3c" />
+            <meta property="og:type" content="website" />
+            <meta property="og:url" content="https://rant.lol/" />
+            <meta property="og:title" content="rant.lol" />
+            <meta property="og:description" content="Vent/Rant about your life and other stuff while also sharing it with the fediverse" />
+            <meta property="og:image" content="https://rant.lol/metaimg.png" />
+            <meta property="twitter:card" content="summary_large_image" />
+            <meta property="twitter:url" content="https://rant.lol/" />
+            <meta property="twitter:title" content="rant.lol" />
+            <meta property="twitter:description" content="Vent/Rant about your life and other stuff while also sharing it with the fediverse" />
+            <meta property="twitter:image" content="https://rant.lol/metaimg.png" />
+        </NextHead>
         <Header style={{backgroundColor: "#191d22 !important"}}>
             <Header.Item>
                 <Header.Link href="#" style={{textDecorationLine: "none"}} sx={{fontSize: 2}}>

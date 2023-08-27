@@ -28,7 +28,11 @@ const nextConfig = {
       {
         source: '/.well-known/:param',
         destination: '/api/.well-known/:param'
-      }
+      },
+      {
+        source: '/.well-known/nodeinfo/:param',
+        destination: '/api/.well-known/nodeinfo/:param'
+      },
     ]
   },
 }

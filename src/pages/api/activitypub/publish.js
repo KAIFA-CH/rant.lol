@@ -89,16 +89,31 @@ export default async function publish(req, res) {
       const response = await sendSignedRequest(
         `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
         new URL(`${follower}/inbox`),
+        new URL(`https://mastodon.social/inbox`),
+        new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
+        new URL('https://social.lol/inbox'),
         createMessage
       );
       const text = await response.text();
       console.log("Following result", response.status, response.statusText, text);
     })
+    
+    // Make sure to send the message to relays and instances.
+    const response = await sendSignedRequest(
+      `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
+      new URL(`https://mastodon.social/inbox`),
+      new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
+      new URL('https://social.lol/inbox'),
+      createMessage
+    );
+    const text = await response.text();
+    console.log("Following result", response.status, response.statusText, text);
   } else {
     const response = await sendSignedRequest(
       `https://${origin}/api/activitypub/${getuser.data.username}/actor#main-key`,
       new URL(`https://mastodon.social/inbox`),
       new URL('https://mastodon-relay.thedoodleproject.net/inbox'),
+      new URL('https://social.lol/inbox'),
       createMessage
     );
     const text = await response.text();
