@@ -3,8 +3,11 @@
 ## Folder Structure explained
 
 `public` - all static files
+
 `src -> components` - everything used in the background like feed, signing mechanism for ActivityPub, head and footer, etc
+
 `src -> pages` - all api endpoints (webfinger, nodeinfo, activitypub and auth) as well as the home and sign up/sign in page
+
 `src -> styles` - modified stylesheets from primer as well as additional stylesheets not included by default
 
 ## Getting Started (development)
